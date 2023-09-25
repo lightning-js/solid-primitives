@@ -1,34 +1,18 @@
 <p>
-  <img src="https://assets.solidjs.com/banner?project=Library&type=solid-lightning" alt="SolidJS Lightning Primitives" />
+  <img src="https://assets.solidjs.com/banner?project=Library&type=solid-lightning-primitives" alt="SolidJS Lightning Primitives" />
 </p>
 
 # solid-lightning-primitives
 
 Solid-Lightning-Primitives are a collection of primitives to get the most out of [Lightning Solid](https://lightningjs.io/).
 
-## Quick Start
-
-Clone starter template:
+## To Install
 
 ```sh
 > npm i @lightningjs/solid-primitives
 ```
 
-### Row and Column
-
-Also included is a Row and Column component which handles key navigation between children by automatically calling setFocus on selected child.
-
-```jsx
-import { Column, Row } from '@lightningjs/solid-primitives';
-<Row y={400} style={styles.Row} gap={12} justifyContent="flexStart">
-  <Button autofocus>TV Shows</Button>
-  <Button>Movies</Button>
-  <Button>Sports</Button>
-  <Button>News</Button>
-</Row>;
-```
-
-### useFocusManager
+## useFocusManager
 
 `useFocusManager` adds key handling, focusPath tracking, and focus and blur events on components. You can do this once in your App component. It returns a signal, focusPath which is an array of elements that currently have focus. When `activeElement` changes, the focusPath will be recalculated. During which all elements in focus will have a `focus` state added and onFocus(currentFocusedElm, prevFocusedElm) event called. Elements losing focus will have `focus` state removed and onBlur(currentFocusedElm, prevFocusedElm) called.
 
@@ -63,12 +47,27 @@ useFocusManager({
 
 When keys m, t, b are pressed - onMenu, onText, onButtons will be called respectively.
 
+### Row and Column
+
+Row and Column component handles key navigation between children by automatically calling setFocus on selected child.
+
+```jsx
+import { Column, Row } from '@lightningjs/solid-primitives';
+<Row y={400} style={styles.Row} gap={12} justifyContent="flexStart">
+  <Button autofocus>TV Shows</Button>
+  <Button>Movies</Button>
+  <Button>Sports</Button>
+  <Button>News</Button>
+</Row>;
+```
+
 ### withPadding
 
 `withPadding` is a [directive](https://www.solidjs.com/docs/latest/api#use___) to set padding when a child text node loads. It follows css by taking a single padding value or Array [top, bottom | left, right ] or [top | right, left | bottom ] or [top | right | bottom | left]
 
 ```jsx
-import { View, Text, withPadding } from '@lightningjs/solid';
+import { Text } from '@lightningjs/solid';
+import { withPadding } from '@lightningjs/solid-primitives';
 
 const Badge = (props) => {
   return (
