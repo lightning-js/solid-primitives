@@ -6,14 +6,11 @@ settings:
 
 dependencies:
   '@lightningjs/solid':
-    specifier: ^0.3.5
-    version: 0.3.5
+    specifier: ^0.4.0
+    version: 0.4.0
   '@solid-primitives/keyboard':
     specifier: ^1.2.5
     version: 1.2.5(solid-js@1.7.12)
-  '@solid-primitives/rootless':
-    specifier: ^1.4.2
-    version: 1.4.2(solid-js@1.7.12)
   '@solid-primitives/scheduled':
     specifier: ^1.4.1
     version: 1.4.1(solid-js@1.7.12)
@@ -322,8 +319,8 @@ packages:
       '@protobufjs/eventemitter': 1.1.0
     dev: false
 
-  /@lightningjs/solid@0.3.5:
-    resolution: {integrity: sha512-I7XC+Nu/VZkGB7rxJ5HtJOZYHEAGU5KMUAb3pSAdjXxQrETpjs6v/rO95exoLw1sXccEdEId2PwMez+fzL7WSA==}
+  /@lightningjs/solid@0.4.0:
+    resolution: {integrity: sha512-YjBug2wLdNAJhNKVRME3oQfYwNwdzCYENn/LWLWFnWgeNSFtbJjx1aag4CEgA+JAAPBu6nlh2tNZdaKwj0dbBw==}
     dependencies:
       '@lightningjs/renderer': 0.3.0
       '@solid-primitives/keyboard': 1.2.5(solid-js@1.7.12)

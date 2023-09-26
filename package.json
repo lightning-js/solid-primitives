@@ -17,8 +17,7 @@
     "build": "tsc",
     "watch": "tsc -w",
     "dev": "concurrently -c \"auto\" \"npm:watch\" \"npm:vite\"",
-    "vite": "vite --open \"/test/index.html\" --host",
-    "prepare": "husky install"
+    "vite": "vite --open \"/test/index.html\" --host"
   },
   "keywords": [
     "lightning",
@@ -49,9 +48,11 @@
     "*.{js,cjs,md}": "prettier --write"
   },
   "dependencies": {
-    "@lightningjs/solid": "^0.3.5",
     "@solid-primitives/keyboard": "^1.2.5",
-    "@solid-primitives/scheduled": "^1.4.1",
+    "@solid-primitives/scheduled": "^1.4.1"
+  },
+  "peerDependencies": {
+    "@lightningjs/solid": "^0.4.0",
     "solid-js": "^1.7.12"
   },
   "files": [
