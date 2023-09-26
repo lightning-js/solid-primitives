@@ -6,7 +6,7 @@ settings:
 
 dependencies:
   '@lightningjs/solid':
-    specifier: ^0.4.0
+    specifier: '*'
     version: 0.4.0
   '@solid-primitives/keyboard':
     specifier: ^1.2.5

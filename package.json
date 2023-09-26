@@ -52,7 +52,7 @@
     "@solid-primitives/scheduled": "^1.4.1"
   },
   "peerDependencies": {
-    "@lightningjs/solid": "^0.4.0",
+    "@lightningjs/solid": "*",
     "solid-js": "^1.7.12"
   },
   "files": [

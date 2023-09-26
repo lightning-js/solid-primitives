@@ -18,11 +18,10 @@
 import { createEffect, on } from 'solid-js';
 import { Announcer } from './Announcer';
 import { focusPath } from '../useFocusManager';
-import { createSingletonRoot } from '@solid-primitives/rootless';
 
-export const useAnnouncer = createSingletonRoot(() => {
+export const useAnnouncer = () => {
   Announcer.setupTimers();
   createEffect(on(focusPath, Announcer.onFocusChange, { defer: true }));
 
   return Announcer;
-});
+};
