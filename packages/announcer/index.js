@@ -16,7 +16,7 @@
  */
 
 import { createEffect, on } from 'solid-js';
-import { Announcer } from './Announcer';
+import { Announcer } from './announcer';
 import { focusPath } from '../useFocusManager';
 
 export const useAnnouncer = () => {
