@@ -59,6 +59,10 @@ import { Column, Row } from '@lightningjs/solid-primitives';
   <Button>Sports</Button>
   <Button>News</Button>
 </Row>;
+
+`onSelectedChanged(Row|Column, activeElm, selectedIndex, lastSelectedIndex)` is a callback you can tie into whenever Row or Column changes the selected element.
+
+You can also add `plinko` attribute to set the selected index equal to the previous rows selectedIndex so you can move straight up and down. Useful for when you have a column with nested rows.
 ```
 
 ### withPadding
@@ -92,4 +96,34 @@ const Badge = (props) => {
   );
 };
 <Badge>HD</Badge>;
+```
+
+### createSpriteMap
+
+`createSpriteMap` allows you to take a sprite and use different positions of the texture
+for different icons. This loads a texture once and allows it to be reused for performance and memory savings.
+
+```jsx
+import { View } from '@lightningjs/solid';
+import { createSpriteMap } from '@lightningjs/solid-primitives';
+const icons = [
+  { name: 'dolby', width: 39, height: 40, x: 0, y: 0 },
+  { name: 'ellipse', width: 56, height: 56, x: 40, y: 0 },
+  { name: 'ellipse1', width: 56, height: 56, x: 96, y: 0 },
+];
+
+export default function Icon(props) {
+  const sprite = createSpriteMap('/assets/icons/spritesheet.png', icons);
+
+  return (
+    <View
+      {...props}
+      texture={sprite[props.name]}
+      width={sprite[props.name].props.width}
+      height={sprite[props.name].props.height}
+      x={(56 - sprite[props.name].props.width) / 2}
+      y={(56 - sprite[props.name].props.height) / 2}
+    ></View>
+  );
+}
 ```

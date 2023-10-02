@@ -16,12 +16,13 @@
  */
 
 import { setActiveElement } from '@lightningjs/solid';
+import { isFunc } from './utils';
 
 export function handleNavigation(direction) {
   return function () {
     const numChildren = this.children.length;
     const wrap = this.wrap;
-    const currentSelected = this.selected;
+    const lastSelected = this.selected;
 
     if (direction === 'right' || direction === 'down') {
       do {
@@ -48,11 +49,26 @@ export function handleNavigation(direction) {
     }
 
     if (this.selected === false) {
-      this.selected = currentSelected;
+      this.selected = lastSelected;
       return false;
     }
+    const active = this.children[this.selected];
+    isFunc(this.onSelectedChanged) &&
+      this.onSelectedChanged.call(
+        this,
+        this,
+        active,
+        this.selected,
+        lastSelected,
+      );
 
-    setActiveElement(this.children[this.selected]);
+    if (this.plinko) {
+      // Set the next item to have the same selected index
+      // so we move up / down directly
+      const num = this.children[lastSelected].selected;
+      active.selected = num;
+    }
+    setActiveElement(active);
     return true;
   };
 }
