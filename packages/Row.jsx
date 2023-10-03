@@ -25,5 +25,6 @@ export function Row(props) {
     onLeft={left}
     onRight={right}
     selected={0}
+    onFocus={props.onFocus || (elm => elm.children[elm.selected]?.setFocus())}
     {...props}>{props.children}</node>
 }
