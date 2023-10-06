@@ -18,13 +18,13 @@
 import { renderer } from '@lightningjs/solid';
 
 export function createSpriteMap(src, subTextures) {
-  const spriteMapTexture = renderer.makeTexture('ImageTexture', {
+  const spriteMapTexture = renderer.createTexture('ImageTexture', {
     src,
   });
 
   return subTextures.reduce((acc, t) => {
     const { x, y, width, height } = t;
-    acc[t.name] = renderer.makeTexture('SubTexture', {
+    acc[t.name] = renderer.createTexture('SubTexture', {
       texture: spriteMapTexture,
       x,
       y,
