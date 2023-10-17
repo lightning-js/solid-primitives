@@ -15,9 +15,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { handleNavigation } from "./navigation";
+import { handleNavigation } from "./navigation.js";
+import { ElementNode, type IntrinsicNodeProps } from '@lightningjs/solid';
 
-export function Row(props) {
+export function Row(props: Partial<IntrinsicNodeProps>) {
   const left = handleNavigation('left');
   const right = handleNavigation('right');
 
@@ -25,6 +26,11 @@ export function Row(props) {
     onLeft={left}
     onRight={right}
     selected={0}
-    onFocus={props.onFocus || (elm => elm.children[elm.selected]?.setFocus())}
+    onFocus={props.onFocus || (elm => {
+      if (!elm || !elm.selected) return;
+      const child = elm.children[elm.selected];
+      if (!(child instanceof ElementNode)) return;
+      child.setFocus();
+    })}
     {...props}>{props.children}</node>
 }

@@ -15,22 +15,22 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { renderer } from '@lightningjs/solid';
+import { ElementNode, type IntrinsicNodeProps } from "@lightningjs/solid";
+import { handleNavigation } from "./navigation.js";
 
-export function createSpriteMap(src, subTextures) {
-  const spriteMapTexture = renderer.createTexture('ImageTexture', {
-    src,
-  });
+export function Column(props: Partial<IntrinsicNodeProps>) {
+  const up = handleNavigation('up');
+  const down = handleNavigation('down');
 
-  return subTextures.reduce((acc, t) => {
-    const { x, y, width, height } = t;
-    acc[t.name] = renderer.createTexture('SubTexture', {
-      texture: spriteMapTexture,
-      x,
-      y,
-      width,
-      height,
-    });
-    return acc;
-  }, {});
+  return <node
+    onUp={up}
+    onDown={down}
+    onFocus={props.onFocus || (elm => {
+      if (!elm || !elm.selected) return;
+      const child = elm.children[elm.selected];
+      if (!(child instanceof ElementNode)) return;
+      child.setFocus();
+    })}
+    selected={0}
+    {...props}>{props.children}</node>
 }

@@ -15,12 +15,24 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+type CoreSpeechType = string | (() => SpeechType) | SpeechType[];
+export type SpeechType = CoreSpeechType | Promise<CoreSpeechType>;
+
+export interface SeriesResult {
+  series: Promise<void>;
+  readonly active: boolean;
+  append: (toSpeak: SpeechType) => void;
+  cancel: () => void;
+}
+
 /* global SpeechSynthesisErrorEvent */
-function flattenStrings(series = []) {
+function flattenStrings(series: SpeechType[] = []): SpeechType[] {
   const flattenedSeries = [];
 
-  for (var i = 0; i < series.length; i++) {
-    if (typeof series[i] === 'string' && !series[i].includes('PAUSE-')) {
+  let i;
+  for (i = 0; i < series.length; i++) {
+    const s = series[i];
+    if (typeof s === 'string' && !s.includes('PAUSE-')) {
       flattenedSeries.push(series[i]);
     } else {
       break;
@@ -30,10 +42,10 @@ function flattenStrings(series = []) {
   // interpret strings that look like dates but are not actually dates
   // for example, if "Rising Sun" and "1993" are meant to be two separate lines,
   // when read together, "Sun 1993" is interpretted as "Sunday 1993"
-  return [flattenedSeries.join(',\b ')].concat(series.slice(i));
+  return ([flattenedSeries.join(',\b ')] as SpeechType[]).concat(series.slice(i));
 }
 
-function delay(pause) {
+function delay(pause: number) {
   return new Promise((resolve) => {
     setTimeout(resolve, pause);
   });
@@ -42,13 +54,14 @@ function delay(pause) {
 /**
  * Speak a string
  *
- * @param {string} phrase Phrase to speak
- * @param {SpeechSynthesisUtterance[]} utterances An array which the new SpeechSynthesisUtterance instance representing this utterance will be appended
+ * @param phrase Phrase to speak
+ * @param utterances An array which the new SpeechSynthesisUtterance instance representing this utterance will be appended
+ * @param lang Language to speak in
  * @return {Promise<void>} Promise resolved when the utterance has finished speaking, and rejected if there's an error
  */
-function speak(phrase, utterances, lang = 'en-US') {
+function speak(phrase: string, utterances: SpeechSynthesisUtterance[], lang = 'en-US') {
   const synth = window.speechSynthesis;
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     const utterance = new SpeechSynthesisUtterance(phrase);
     utterance.lang = lang;
     utterance.onend = () => {
@@ -62,19 +75,19 @@ function speak(phrase, utterances, lang = 'en-US') {
   });
 }
 
-function speakSeries(series, lang, root = true) {
+function speakSeries(series: SpeechType, lang: string, root = true): SeriesResult {
   const synth = window.speechSynthesis;
   const remainingPhrases = flattenStrings(
     Array.isArray(series) ? series : [series],
   );
-  const nestedSeriesResults = [];
+  const nestedSeriesResults: SeriesResult[] = [];
   /*
     We hold this array of SpeechSynthesisUtterances in order to prevent them from being
     garbage collected prematurely on STB hardware which can cause the 'onend' events of
     utterances to not fire consistently.
   */
-  const utterances = [];
-  let active = true;
+  const utterances: SpeechSynthesisUtterance[] = [];
+  let active: boolean = true;
 
   const seriesChain = (async () => {
     try {
@@ -86,7 +99,7 @@ function speakSeries(series, lang, root = true) {
           break;
         } else if (typeof phrase === 'string' && phrase.includes('PAUSE-')) {
           // Pause it
-          let pause = phrase.split('PAUSE-')[1] * 1000;
+          let pause = Number(phrase.split('PAUSE-')[1]) * 1000;
           if (isNaN(pause)) {
             pause = 0;
           }
@@ -142,7 +155,7 @@ function speakSeries(series, lang, root = true) {
     get active() {
       return active;
     },
-    append: (toSpeak) => {
+    append: (toSpeak: SpeechType) => {
       remainingPhrases.push(toSpeak);
     },
     cancel: () => {
@@ -160,8 +173,8 @@ function speakSeries(series, lang, root = true) {
   };
 }
 
-let currentSeries;
-export default function (toSpeak, lang) {
+let currentSeries: SeriesResult | undefined;
+export default function (toSpeak: SpeechType, lang: string = 'en-US') {
   currentSeries && currentSeries.cancel();
   currentSeries = speakSeries(toSpeak, lang);
   return currentSeries;

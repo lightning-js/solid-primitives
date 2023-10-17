@@ -15,16 +15,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { handleNavigation } from "./navigation";
+import { createEffect, on } from 'solid-js';
+import { Announcer } from './announcer.js';
+import { focusPath } from '../useFocusManager.js';
 
-export function Column(props) {
-  const up = handleNavigation('up');
-  const down = handleNavigation('down');
+export const useAnnouncer = () => {
+  Announcer.setupTimers();
+  createEffect(on(focusPath, Announcer.onFocusChange!, { defer: true }));
 
-  return <node
-    onUp={up}
-    onDown={down}
-    onFocus={props.onFocus || (elm => elm.children[elm.selected]?.setFocus())}
-    selected={0}
-    {...props}>{props.children}</node>
-}
+  return Announcer;
+};

@@ -15,13 +15,31 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { createEffect, on } from 'solid-js';
-import { Announcer } from './announcer';
-import { focusPath } from '../useFocusManager';
+import { renderer } from '@lightningjs/solid';
+import { type TextureRef } from '@lightningjs/renderer';
 
-export const useAnnouncer = () => {
-  Announcer.setupTimers();
-  createEffect(on(focusPath, Announcer.onFocusChange, { defer: true }));
+export interface SpriteDef {
+  name: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
 
-  return Announcer;
-};
+export function createSpriteMap(src: string, subTextures: SpriteDef[]) {
+  const spriteMapTexture = renderer.createTexture('ImageTexture', {
+    src,
+  });
+
+  return subTextures.reduce<Record<string, TextureRef>>((acc, t) => {
+    const { x, y, width, height } = t;
+    acc[t.name] = renderer.createTexture('SubTexture', {
+      texture: spriteMapTexture,
+      x,
+      y,
+      width,
+      height,
+    });
+    return acc;
+  }, {});
+}

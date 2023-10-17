@@ -15,20 +15,40 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import SpeechEngine from './speech.js';
+import type { ElementNode } from '@lightningjs/solid';
+import SpeechEngine, { type SeriesResult, type SpeechType } from './speech.js';
 import { debounce } from '@solid-primitives/scheduled';
 
-let resetFocusPathTimer;
-let prevFocusPath = [];
-let currentlySpeaking;
+type DebounceWithFlushFunction<T> = {
+  (newValue: T): void;
+  flush(): void;
+  clear: VoidFunction;
+};
+
+declare module '@lightningjs/solid' {
+  /**
+   * Augment the existing ElementNode interface with our own
+   * Announcer-specific properties.
+   */
+  interface IntrinsicCommonProps {
+    announce?: SpeechType;
+    announceContext?: SpeechType;
+    title?: SpeechType;
+    loading?: boolean;
+  }
+}
+
+let resetFocusPathTimer: DebounceWithFlushFunction<void>;
+let prevFocusPath: ElementNode[] = [];
+let currentlySpeaking: SeriesResult | undefined;
 let voiceOutDisabled = false;
 const fiveMinutes = 300000;
 
-const debounceWithFlush = (callback, time) => {
+function debounceWithFlush<T>(callback: (newValue: T) => void, time?: number): DebounceWithFlushFunction<T> {
   const trigger = debounce(callback, time);
-  let scopedValue;
+  let scopedValue: T;
 
-  const debounced = (newValue) => {
+  const debounced = (newValue: T) => {
     scopedValue = newValue;
     trigger(newValue);
   };
@@ -43,12 +63,12 @@ const debounceWithFlush = (callback, time) => {
   return debounced;
 };
 
-function getElmName(elm) {
+function getElmName(elm: ElementNode) {
   return elm.id || elm.name;
 }
 
-function onFocusChangeCore(focusPath = []) {
-  if (!Announcer.enabled) {
+function onFocusChangeCore(focusPath: ElementNode[] = []) {
+  if (!Announcer.onFocusChange) {
     return;
   }
 
@@ -57,15 +77,15 @@ function onFocusChangeCore(focusPath = []) {
 
   resetFocusPathTimer();
 
-  if (!loaded) {
-    Announcer.onFocusChange();
+  if (!loaded && Announcer.onFocusChange) {
+    Announcer.onFocusChange([]);
     return;
   }
 
   prevFocusPath = focusPath.slice(0);
 
-  let toAnnounceText = [];
-  let toAnnounce = focusDiff.reduce((acc, elm) => {
+  const toAnnounceText: SpeechType[] = [];
+  const toAnnounce = focusDiff.reduce((acc: [string, string, SpeechType][], elm) => {
     if (elm.announce) {
       acc.push([getElmName(elm), 'Announce', elm.announce]);
       toAnnounceText.push(elm.announce);
@@ -94,12 +114,12 @@ function onFocusChangeCore(focusPath = []) {
 
   if (toAnnounceText.length) {
     return Announcer.speak(
-      toAnnounceText.reduce((acc, val) => acc.concat(val), []),
+      toAnnounceText.reduce((acc: SpeechType[], val) => acc.concat(val), []),
     );
   }
 }
 
-function textToSpeech(toSpeak) {
+function textToSpeech(toSpeak: SpeechType) {
   if (voiceOutDisabled) {
     return;
   }
@@ -107,8 +127,16 @@ function textToSpeech(toSpeak) {
   return (currentlySpeaking = SpeechEngine(toSpeak));
 }
 
-export const Announcer = {
-  enabled: true,
+export interface Announcer {
+  debug: boolean;
+  cancel: VoidFunction;
+  clearPrevFocus: (depth?: number) => void;
+  speak: (text: SpeechType, options?: { append?: boolean; notification?: boolean }) => SeriesResult;
+  setupTimers: (options?: { focusDebounce?: number; focusChangeTimeout?: number }) => void;
+  onFocusChange?: DebounceWithFlushFunction<ElementNode[]>;
+}
+
+export const Announcer: Announcer = {
   debug: false,
   cancel: function () {
     currentlySpeaking && currentlySpeaking.cancel();
@@ -118,7 +146,7 @@ export const Announcer = {
     resetFocusPathTimer();
   },
   speak: function (text, { append = false, notification = false } = {}) {
-    if (Announcer.enabled) {
+    if (Announcer.onFocusChange) {
       Announcer.onFocusChange.flush();
       if (append && currentlySpeaking && currentlySpeaking.active) {
         currentlySpeaking.append(text);
@@ -129,14 +157,15 @@ export const Announcer = {
 
       if (notification) {
         voiceOutDisabled = true;
-        currentlySpeaking.series.finally(() => {
+        currentlySpeaking?.series.finally(() => {
           voiceOutDisabled = false;
-          Announcer.refresh();
-        });
+          // TODO: Implement refresh
+          // Announcer.refresh();
+        }).catch(console.error);
       }
     }
 
-    return currentlySpeaking;
+    return currentlySpeaking as SeriesResult;
   },
   setupTimers: function ({
     focusDebounce = 400,
