@@ -15,9 +15,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-export * from './packages/useFocusManager';
-export * from './packages/withPadding';
-export * from './packages/announcer';
-export * from './packages/Row';
-export * from './packages/Column';
-export * from './packages/createSpriteMap';
+export * from './packages/useFocusManager.js';
+export * from './packages/withPadding.js';
+export * from './packages/announcer/index.js';
+export * from './packages/Row.jsx';
+export * from './packages/Column.jsx';
+export * from './packages/createSpriteMap.js';

@@ -15,11 +15,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { setActiveElement } from '@lightningjs/solid';
-import { isFunc } from './utils';
+import { ElementNode, setActiveElement } from '@lightningjs/solid';
+import { assertTruthy } from './utils.js';
+import type { KeyHandler } from './useFocusManager.js';
 
-export function handleNavigation(direction) {
-  return function () {
+export function handleNavigation(direction: 'up' | 'right' | 'down' | 'left'): KeyHandler {
+  return function() {
     const numChildren = this.children.length;
     const wrap = this.wrap;
     const lastSelected = this.selected;
@@ -29,7 +30,7 @@ export function handleNavigation(direction) {
         this.selected = ((this.selected || 0) % numChildren) + 1;
         if (this.selected >= numChildren) {
           if (!wrap) {
-            this.selected = false;
+            this.selected = null;
             break;
           }
           this.selected = 0;
@@ -40,7 +41,7 @@ export function handleNavigation(direction) {
         this.selected = ((this.selected || 0) % numChildren) - 1;
         if (this.selected < 0) {
           if (!wrap) {
-            this.selected = false;
+            this.selected = null;
             break;
           }
           this.selected = numChildren - 1;
@@ -48,12 +49,13 @@ export function handleNavigation(direction) {
       } while (this.children[this.selected]?.skipFocus);
     }
 
-    if (this.selected === false) {
+    if (this.selected === null) {
       this.selected = lastSelected;
       return false;
     }
     const active = this.children[this.selected];
-    isFunc(this.onSelectedChanged) &&
+    assertTruthy(active instanceof ElementNode);
+    this.onSelectedChanged &&
       this.onSelectedChanged.call(
         this,
         this,
@@ -62,10 +64,12 @@ export function handleNavigation(direction) {
         lastSelected,
       );
 
-    if (this.plinko) {
+    if (this.plinko && lastSelected !== null) {
       // Set the next item to have the same selected index
       // so we move up / down directly
-      const num = this.children[lastSelected].selected;
+      const lastSelectedChild = this.children[lastSelected];
+      assertTruthy(lastSelectedChild instanceof ElementNode);
+      const num = lastSelectedChild.selected;
       active.selected = num;
     }
     setActiveElement(active);
