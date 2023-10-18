@@ -2,7 +2,7 @@ lockfileVersion: 5.3
 
 specifiers:
   '@lightningjs/renderer': ^0.3.6
-  '@lightningjs/solid': ^0.6.10
+  '@lightningjs/solid': ^0.7.0
   '@solid-primitives/keyboard': ^1.2.5
   '@solid-primitives/scheduled': ^1.4.1
   '@typescript-eslint/eslint-plugin': ^6.3.0
@@ -23,7 +23,7 @@ dependencies:
 
 devDependencies:
   '@lightningjs/renderer': 0.3.6
-  '@lightningjs/solid': 0.6.10_solid-js@1.8.1
+  '@lightningjs/solid': 0.7.0_solid-js@1.8.1
   '@typescript-eslint/eslint-plugin': 6.7.5_1be721c87168cd71277fe57a081aef24
   '@typescript-eslint/parser': 6.7.5_eslint@8.51.0+typescript@5.2.2
   eslint: 8.51.0
@@ -283,12 +283,19 @@ packages:
       '@protobufjs/eventemitter': 1.1.0
     dev: true
 
-  /@lightningjs/solid/0.6.10_solid-js@1.8.1:
-    resolution: {integrity: sha512-KwakkK+UHz2ZN8svdiYYEgKFyAt9IKiRcL8e7z8gUoVboNyIh56SKleCRgdVfLPU7KaSdJt8Jtb6R5HV/4P4pA==}
+  /@lightningjs/renderer/0.4.0:
+    resolution: {integrity: sha512-95I9pQj9WtbpcDuTkfPAlIUwhF1k/Y8jWhn0qjDbAiv8uwWEL5kvSeItPGoKwd7BYqL1iqlfzsOrkeQd7V8JKQ==}
+    dependencies:
+      '@lightningjs/threadx': 0.3.3
+      '@protobufjs/eventemitter': 1.1.0
+    dev: true
+
+  /@lightningjs/solid/0.7.0_solid-js@1.8.1:
+    resolution: {integrity: sha512-NGOHN/7Tqxgp5F8aoPaY28aZSBBSZsRcaT8ZbwJCOpqGOixhJuqhKvBM4j9IIC1S/VfNUUrKUUlVl2q8ojTS2g==}
     peerDependencies:
       solid-js: '*'
     dependencies:
-      '@lightningjs/renderer': 0.3.6
+      '@lightningjs/renderer': 0.4.0
       solid-js: 1.8.1
     dev: true
 
