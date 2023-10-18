@@ -53,7 +53,7 @@ declare module '@lightningjs/solid' {
     onKeyPress?: (
       this: ElementNode,
       e: KeyboardEvent,
-      key: string,
+      mappedKeyEvent: string | undefined,
       currentFocusedElm: ElementNode,
     ) => KeyHandlerReturn;
     onSelectedChanged?: (
@@ -65,6 +65,16 @@ declare module '@lightningjs/solid' {
     skipFocus?: boolean;
     wrap?: boolean;
     plinko?: boolean;
+  }
+
+  interface IntrinsicNodeStyleProps {
+    // TODO: Refactor states to use a $ prefix
+    focus?: IntrinsicNodeStyleProps;
+  }
+
+  interface IntrinsicTextNodeStyleProps {
+    // TODO: Refactor states to use a $ prefix
+    focus?: IntrinsicTextNodeStyleProps;
   }
 
   interface TextNode {
@@ -89,6 +99,7 @@ export const useFocusManager = (userKeyMap: Partial<KeyMap> = {}) => {
     ...keyMap,
     ...userKeyMap,
   };
+  const keyMapEntries = Object.entries(keyMap);
   createEffect(
     on(
       activeElement,
@@ -128,19 +139,26 @@ export const useFocusManager = (userKeyMap: Partial<KeyMap> = {}) => {
     const e = keypressEvent();
 
     if (e) {
-      const key = keyMap[e.key as keyof typeof keyMap] || e.key;
+      // Search keyMap for the value of the pressed key
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const foundKeyEntry = keyMapEntries.find(([key, value]) => {
+        return (value === e.key);
+      });
       untrack(() => {
         const fp = focusPath();
         for (const elm of fp) {
-          const onKeyHandler = elm[`on${key}` as keyof KeyMapEventHandlers];
-          if (isFunc(onKeyHandler)) {
-            if (onKeyHandler.call(elm, e, elm) === true) {
-              break;
+          const mappedKeyEvent = foundKeyEntry ? foundKeyEntry[0] : undefined;
+          if (mappedKeyEvent) {
+            const onKeyHandler = elm[`on${mappedKeyEvent}` as keyof KeyMapEventHandlers];
+            if (isFunc(onKeyHandler)) {
+              if (onKeyHandler.call(elm, e, elm) === true) {
+                break;
+              }
             }
           }
 
           if (isFunc(elm.onKeyPress)) {
-            if (elm.onKeyPress.call(elm, e, key, elm) === true) {
+            if (elm.onKeyPress.call(elm, e, mappedKeyEvent, elm) === true) {
               break;
             }
           }
