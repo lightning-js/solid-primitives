@@ -15,9 +15,24 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { ElementNode } from "@lightningjs/solid";
+import { ElementNode } from '@lightningjs/solid';
 
-export function withPadding(el: ElementNode, padding: () => number[]) {
+type withPaddingInput =
+  | number
+  | [number, number]
+  | [number, number, number]
+  | [number, number, number, number];
+
+declare module 'solid-js/jsx-runtime' {
+  namespace JSX {
+    interface Directives {
+      withPadding: withPaddingInput;
+    }
+  }
+}
+
+// To use with TS import withPadding and then put withPadding; on the next line to prevent tree shaking
+export function withPadding(el: ElementNode, padding: () => withPaddingInput) {
   const pad = padding();
   let top: number, left: number, right: number, bottom: number;
 
@@ -31,7 +46,7 @@ export function withPadding(el: ElementNode, padding: () => number[]) {
       left = right = pad[1]!;
       bottom = pad[2]!;
     } else {
-      [top, right, bottom, left] = pad as [number, number, number, number];
+      [top, right, bottom, left] = pad;
     }
   } else {
     top = right = bottom = left = pad;
@@ -45,7 +60,7 @@ export function withPadding(el: ElementNode, padding: () => number[]) {
       node.x = left;
       node.y = top;
 
-      el.parent!.updateLayout(el, { width: el.width, height: el.height });
+      el.parent.updateLayout(el, { width: el.width, height: el.height });
     }
   };
 }
