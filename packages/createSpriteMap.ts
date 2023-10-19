@@ -16,7 +16,7 @@
  */
 
 import { renderer } from '@lightningjs/solid';
-import { type TextureRef } from '@lightningjs/renderer';
+import { type SpecificTextureRef } from '@lightningjs/renderer';
 
 export interface SpriteDef {
   name: string;
@@ -31,7 +31,7 @@ export function createSpriteMap(src: string, subTextures: SpriteDef[]) {
     src,
   });
 
-  return subTextures.reduce<Record<string, TextureRef>>((acc, t) => {
+  return subTextures.reduce<Record<string, SpecificTextureRef<"SubTexture">>>((acc, t) => {
     const { x, y, width, height } = t;
     acc[t.name] = renderer.createTexture('SubTexture', {
       texture: spriteMapTexture,
