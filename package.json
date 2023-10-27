@@ -37,8 +37,8 @@
   "author": "Chris Lorenzo",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@lightningjs/renderer": "^0.3.6",
-    "@lightningjs/solid": "^0.7.0",
+    "@lightningjs/renderer": "^0.4.1",
+    "@lightningjs/solid": "^0.7.2",
     "@typescript-eslint/eslint-plugin": "^6.3.0",
     "@typescript-eslint/parser": "^6.3.0",
     "eslint": "^8.46.0",
@@ -63,6 +63,7 @@
     "@solid-primitives/scheduled": "^1.4.1"
   },
   "peerDependencies": {
+    "@lightningjs/renderer": "*",
     "@lightningjs/solid": "*",
     "solid-js": "*"
   },

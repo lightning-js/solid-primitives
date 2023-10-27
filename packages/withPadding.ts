@@ -52,15 +52,29 @@ export function withPadding(el: ElementNode, padding: () => withPaddingInput) {
     top = right = bottom = left = pad;
   }
 
-  el.onLayout = (node, size) => {
+  el.onBeforeLayout = (node, size) => {
     if (size) {
-      el.width = size.width + left + right;
-      el.height = size.height + top + bottom;
+      el.width =
+        el.children.reduce((acc, c) => {
+          return acc + (c.width || 0);
+        }, 0) +
+        left +
+        right;
+      const firstChild = el.children[0];
+      if (firstChild) {
+        // set padding or marginLeft for flex
+        firstChild.x = left;
+        firstChild.marginLeft = left;
+      }
 
-      node.x = left;
-      node.y = top;
-
-      el.parent.updateLayout(el, { width: el.width, height: el.height });
+      el.height =
+        el.children.reduce((acc, c) => {
+          c.y = (c.y || 0) + top;
+          c.marginTop = top;
+          return acc + (c.height || 0);
+        }, 0) +
+        top +
+        bottom;
     }
   };
 }
