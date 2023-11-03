@@ -33,9 +33,9 @@ The calculated focusPath is used for handling key events. When a key is pressed,
 import { useFocusManager } from '@lightningjs/solid-primitives';
 
 useFocusManager({
-  m: 'Menu',
-  t: 'Text',
-  b: 'Buttons',
+  Menu: 'm',
+  Text: 't',
+  Buttons: 'b',
 });
 
 <View
