@@ -16,8 +16,10 @@
  */
 
 import type { ElementNode } from '@lightningjs/solid';
+import { untrack } from 'solid-js';
 import SpeechEngine, { type SeriesResult, type SpeechType } from './speech.js';
 import { debounce } from '@solid-primitives/scheduled';
+import { focusPath } from '../useFocusManager.js';
 
 type DebounceWithFlushFunction<T> = {
   (newValue: T): void;
@@ -44,7 +46,10 @@ let currentlySpeaking: SeriesResult | undefined;
 let voiceOutDisabled = false;
 const fiveMinutes = 300000;
 
-function debounceWithFlush<T>(callback: (newValue: T) => void, time?: number): DebounceWithFlushFunction<T> {
+function debounceWithFlush<T>(
+  callback: (newValue: T) => void,
+  time?: number,
+): DebounceWithFlushFunction<T> {
   const trigger = debounce(callback, time);
   let scopedValue: T;
 
@@ -61,7 +66,7 @@ function debounceWithFlush<T>(callback: (newValue: T) => void, time?: number): D
   debounced.clear = trigger.clear;
 
   return debounced;
-};
+}
 
 function getElmName(elm: ElementNode) {
   return elm.id || elm.name;
@@ -85,18 +90,21 @@ function onFocusChangeCore(focusPath: ElementNode[] = []) {
   prevFocusPath = focusPath.slice(0);
 
   const toAnnounceText: SpeechType[] = [];
-  const toAnnounce = focusDiff.reduce((acc: [string, string, SpeechType][], elm) => {
-    if (elm.announce) {
-      acc.push([getElmName(elm), 'Announce', elm.announce]);
-      toAnnounceText.push(elm.announce);
-    } else if (elm.title) {
-      acc.push([getElmName(elm), 'Title', elm.title]);
-      toAnnounceText.push(elm.title);
-    } else {
-      acc.push([getElmName(elm), 'No Announce', '']);
-    }
-    return acc;
-  }, []);
+  const toAnnounce = focusDiff.reduce(
+    (acc: [string, string, SpeechType][], elm) => {
+      if (elm.announce) {
+        acc.push([getElmName(elm), 'Announce', elm.announce]);
+        toAnnounceText.push(elm.announce);
+      } else if (elm.title) {
+        acc.push([getElmName(elm), 'Title', elm.title]);
+        toAnnounceText.push(elm.title);
+      } else {
+        acc.push([getElmName(elm), 'No Announce', '']);
+      }
+      return acc;
+    },
+    [],
+  );
 
   focusDiff.reverse().reduce((acc, elm) => {
     if (elm.announceContext) {
@@ -131,9 +139,16 @@ export interface Announcer {
   debug: boolean;
   cancel: VoidFunction;
   clearPrevFocus: (depth?: number) => void;
-  speak: (text: SpeechType, options?: { append?: boolean; notification?: boolean }) => SeriesResult;
-  setupTimers: (options?: { focusDebounce?: number; focusChangeTimeout?: number }) => void;
+  speak: (
+    text: SpeechType,
+    options?: { append?: boolean; notification?: boolean },
+  ) => SeriesResult;
+  setupTimers: (options?: {
+    focusDebounce?: number;
+    focusChangeTimeout?: number;
+  }) => void;
   onFocusChange?: DebounceWithFlushFunction<ElementNode[]>;
+  refresh: (depth?: number) => void;
 }
 
 export const Announcer: Announcer = {
@@ -157,15 +172,21 @@ export const Announcer: Announcer = {
 
       if (notification) {
         voiceOutDisabled = true;
-        currentlySpeaking?.series.finally(() => {
-          voiceOutDisabled = false;
-          // TODO: Implement refresh
-          // Announcer.refresh();
-        }).catch(console.error);
+        currentlySpeaking?.series
+          .finally(() => {
+            voiceOutDisabled = false;
+            Announcer.refresh();
+          })
+          .catch(console.error);
       }
     }
 
     return currentlySpeaking as SeriesResult;
+  },
+  refresh: function (depth = 0) {
+    Announcer.clearPrevFocus(depth);
+    Announcer.onFocusChange &&
+      Announcer.onFocusChange(untrack(() => focusPath()));
   },
   setupTimers: function ({
     focusDebounce = 400,
