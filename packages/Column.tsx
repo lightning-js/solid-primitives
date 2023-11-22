@@ -15,12 +15,18 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { ElementNode, type IntrinsicNodeProps } from "@lightningjs/solid";
+import { ElementNode, type IntrinsicNodeProps, type IntrinsicNodeStyleProps } from "@lightningjs/solid";
 import { handleNavigation } from "./navigation.js";
 
 export function Column(props: Partial<IntrinsicNodeProps>) {
   const up = handleNavigation('up');
   const down = handleNavigation('down');
+  const defaultStyle : IntrinsicNodeStyleProps = {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flexStart',
+  };
+
 
   return <node
     onUp={up}
@@ -31,6 +37,7 @@ export function Column(props: Partial<IntrinsicNodeProps>) {
       if (!(child instanceof ElementNode)) return;
       child.setFocus();
     })}
-    selected={0}
+    selected={props.selected || 0}
+    style={props.style || defaultStyle}
     {...props}>{props.children}</node>
 }
