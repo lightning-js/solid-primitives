@@ -70,6 +70,7 @@
   "files": [
     "index.js",
     "dist",
+    "src",
     "packages",
     "LICENSE",
     "NOTICE",

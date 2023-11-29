@@ -67,14 +67,13 @@ export function withPadding(el: ElementNode, padding: () => withPaddingInput) {
         firstChild.marginLeft = left;
       }
 
-      el.height =
-        el.children.reduce((acc, c) => {
-          c.y = (c.y || 0) + top;
-          c.marginTop = top;
-          return acc + (c.height || 0);
-        }, 0) +
-        top +
-        bottom;
+      let maxHeight = 0;
+      el.children.forEach((c) => {
+        c.y = (c.y || 0) + top;
+        c.marginTop = top;
+        maxHeight = Math.max(maxHeight, c.height || 0);
+      });
+      el.height = maxHeight + top + bottom;
     }
   };
 }
