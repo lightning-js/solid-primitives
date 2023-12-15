@@ -33,7 +33,11 @@ export function Row(props: Partial<IntrinsicNodeProps>) {
     selected={props.selected || 0}
     onFocus={props.onFocus || (elm => {
       if (!elm || !elm.selected) return;
-      const child = elm.children[elm.selected];
+      let child = elm.children[elm.selected];
+      while (child?.skipFocus) {
+        elm.selected++;
+        child = elm.children[elm.selected];
+      }
       if (!(child instanceof ElementNode)) return;
       child.setFocus();
     })}

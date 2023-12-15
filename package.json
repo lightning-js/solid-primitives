@@ -3,6 +3,7 @@
   "version": "0.4.4",
   "description": "Lightning Primitives for Solid Lightning",
   "type": "module",
+  "source": "./index.js",
   "types": "./dist/index.d.ts",
   "main": "./dist/index.js",
   "exports": {
@@ -70,7 +71,6 @@
   "files": [
     "index.js",
     "dist",
-    "src",
     "packages",
     "LICENSE",
     "NOTICE",
