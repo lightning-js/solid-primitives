@@ -32,7 +32,7 @@ export function Column(props: Partial<IntrinsicNodeProps>) {
     onUp={up}
     onDown={down}
     onFocus={props.onFocus || (elm => {
-      if (!elm || !elm.selected) return;
+      if (!elm || elm.selected === null) return;
       let child = elm.children[elm.selected];
       while (child?.skipFocus) {
         elm.selected++;
