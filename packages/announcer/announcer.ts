@@ -73,7 +73,7 @@ function getElmName(elm: ElementNode) {
 }
 
 function onFocusChangeCore(focusPath: ElementNode[] = []) {
-  if (!Announcer.onFocusChange) {
+  if (!Announcer.onFocusChange || !Announcer.enabled) {
     return;
   }
 
@@ -137,6 +137,7 @@ function textToSpeech(toSpeak: SpeechType) {
 
 export interface Announcer {
   debug: boolean;
+  enabled: boolean;
   cancel: VoidFunction;
   clearPrevFocus: (depth?: number) => void;
   speak: (
@@ -153,6 +154,7 @@ export interface Announcer {
 
 export const Announcer: Announcer = {
   debug: false,
+  enabled: true,
   cancel: function () {
     currentlySpeaking && currentlySpeaking.cancel();
   },
@@ -161,7 +163,7 @@ export const Announcer: Announcer = {
     resetFocusPathTimer();
   },
   speak: function (text, { append = false, notification = false } = {}) {
-    if (Announcer.onFocusChange) {
+    if (Announcer.onFocusChange && Announcer.enabled) {
       Announcer.onFocusChange.flush();
       if (append && currentlySpeaking && currentlySpeaking.active) {
         currentlySpeaking.append(text);

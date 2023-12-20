@@ -33,14 +33,18 @@ export interface KeyMap extends DefaultKeyMap {}
 
 export type KeyHandlerReturn = boolean | void;
 
-export type KeyHandler = (this: ElementNode, e: KeyboardEvent, target: ElementNode) => KeyHandlerReturn;
+export type KeyHandler = (
+  this: ElementNode,
+  e: KeyboardEvent,
+  target: ElementNode,
+) => KeyHandlerReturn;
 
 /**
  * Generates a map of event handlers for each key in the KeyMap
  */
 type KeyMapEventHandlers = {
   [K in keyof KeyMap as `on${Capitalize<K>}`]?: KeyHandler;
-}
+};
 
 declare module '@lightningjs/solid' {
   /**
@@ -48,8 +52,14 @@ declare module '@lightningjs/solid' {
    * FocusManager-specific properties.
    */
   interface IntrinsicCommonProps extends KeyMapEventHandlers {
-    onFocus?: (currentFocusedElm: ElementNode | null, prevFocusedElm: ElementNode | null) => void;
-    onBlur?: (currentFocusedElm: ElementNode | null, prevFocusedElm: ElementNode | null) => void;
+    onFocus?: (
+      currentFocusedElm: ElementNode | null,
+      prevFocusedElm: ElementNode | null,
+    ) => void;
+    onBlur?: (
+      currentFocusedElm: ElementNode | null,
+      prevFocusedElm: ElementNode | null,
+    ) => void;
     onKeyPress?: (
       this: ElementNode,
       e: KeyboardEvent,
@@ -88,7 +98,7 @@ let keyMap: Partial<KeyMap> = {
   Up: 'ArrowUp',
   Down: 'ArrowDown',
   Enter: 'Enter',
-  Last: 'l'
+  Last: 'l',
 } satisfies DefaultKeyMap;
 
 const [focusPath, setFocusPath] = createSignal<ElementNode[]>([]);
@@ -103,7 +113,11 @@ export const useFocusManager = (userKeyMap: Partial<KeyMap> = {}) => {
   createEffect(
     on(
       activeElement,
-      (currentFocusedElm: ElementNode | null, prevFocusedElm: ElementNode | null | undefined, prevFocusPath: ElementNode[] = []) => {
+      (
+        currentFocusedElm: ElementNode | null,
+        prevFocusedElm: ElementNode | null | undefined,
+        prevFocusPath: ElementNode[] = [],
+      ) => {
         const newFocusedElms = [];
         let current: ElementNode | null = currentFocusedElm;
 
@@ -112,7 +126,11 @@ export const useFocusManager = (userKeyMap: Partial<KeyMap> = {}) => {
           if (!current.states.has('focus')) {
             current.states.add('focus');
             isFunc(current.onFocus) &&
-              current.onFocus.call(current, currentFocusedElm, prevFocusedElm ?? null);
+              current.onFocus.call(
+                current,
+                currentFocusedElm,
+                prevFocusedElm ?? null,
+              );
 
             newFocusedElms.push(current);
           }
@@ -142,19 +160,22 @@ export const useFocusManager = (userKeyMap: Partial<KeyMap> = {}) => {
       // Search keyMap for the value of the pressed key
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const foundKeyEntry = keyMapEntries.find(([key, value]) => {
-        return (value === e.key);
+        return value === e.key;
       });
       untrack(() => {
         const fp = focusPath();
         for (const elm of fp) {
           const mappedKeyEvent = foundKeyEntry ? foundKeyEntry[0] : undefined;
           if (mappedKeyEvent) {
-            const onKeyHandler = elm[`on${mappedKeyEvent}` as keyof KeyMapEventHandlers];
+            const onKeyHandler =
+              elm[`on${mappedKeyEvent}` as keyof KeyMapEventHandlers];
             if (isFunc(onKeyHandler)) {
               if (onKeyHandler.call(elm, e, elm) === true) {
                 break;
               }
             }
+          } else {
+            console.log(`Unhandled key event: ${e.key}`);
           }
 
           if (isFunc(elm.onKeyPress)) {
