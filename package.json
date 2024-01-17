@@ -1,6 +1,6 @@
 {
   "name": "@lightningjs/solid-primitives",
-  "version": "0.4.7",
+  "version": "0.4.8",
   "description": "Lightning Primitives for Solid Lightning",
   "type": "module",
   "source": "./index.js",
