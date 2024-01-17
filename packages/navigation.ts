@@ -19,8 +19,10 @@ import { ElementNode, setActiveElement } from '@lightningjs/solid';
 import { assertTruthy } from './utils.js';
 import type { KeyHandler } from './useFocusManager.js';
 
-export function handleNavigation(direction: 'up' | 'right' | 'down' | 'left'): KeyHandler {
-  return function() {
+export function handleNavigation(
+  direction: 'up' | 'right' | 'down' | 'left',
+): KeyHandler {
+  return function () {
     const numChildren = this.children.length;
     const wrap = this.wrap;
     const lastSelected = this.selected;
@@ -69,8 +71,9 @@ export function handleNavigation(direction: 'up' | 'right' | 'down' | 'left'): K
       // so we move up / down directly
       const lastSelectedChild = this.children[lastSelected];
       assertTruthy(lastSelectedChild instanceof ElementNode);
-      const num = lastSelectedChild.selected;
-      active.selected = num;
+      const num = lastSelectedChild.selected || 0;
+      active.selected =
+        num < active.children.length ? num : active.children.length - 1;
     }
     setActiveElement(active);
     return true;
