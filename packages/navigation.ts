@@ -32,7 +32,7 @@ export function handleNavigation(
         this.selected = ((this.selected || 0) % numChildren) + 1;
         if (this.selected >= numChildren) {
           if (!wrap) {
-            this.selected = null;
+            this.selected = undefined;
             break;
           }
           this.selected = 0;
@@ -43,7 +43,7 @@ export function handleNavigation(
         this.selected = ((this.selected || 0) % numChildren) - 1;
         if (this.selected < 0) {
           if (!wrap) {
-            this.selected = null;
+            this.selected = undefined;
             break;
           }
           this.selected = numChildren - 1;
@@ -51,7 +51,7 @@ export function handleNavigation(
       } while (this.children[this.selected]?.skipFocus);
     }
 
-    if (this.selected === null) {
+    if (this.selected === undefined) {
       this.selected = lastSelected;
       return false;
     }
@@ -66,7 +66,7 @@ export function handleNavigation(
         lastSelected,
       );
 
-    if (this.plinko && lastSelected !== null) {
+    if (this.plinko && lastSelected !== undefined) {
       // Set the next item to have the same selected index
       // so we move up / down directly
       const lastSelectedChild = this.children[lastSelected];

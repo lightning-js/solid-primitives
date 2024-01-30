@@ -16,7 +16,7 @@
  */
 
 import { handleNavigation } from "./navigation.js";
-import { ElementNode, type IntrinsicNodeProps, type IntrinsicNodeStyleProps } from '@lightningjs/solid';
+import { View, ElementNode, type IntrinsicNodeProps, type IntrinsicNodeStyleProps } from '@lightningjs/solid';
 
 export function Row(props: Partial<IntrinsicNodeProps>) {
   const left = handleNavigation('left');
@@ -26,13 +26,12 @@ export function Row(props: Partial<IntrinsicNodeProps>) {
     justifyContent: 'flexStart',
   };
 
-
-  return <node
+  return <View
     onLeft={left}
     onRight={right}
     selected={props.selected || 0}
-    onFocus={props.onFocus || (elm => {
-      if (!elm || elm.selected === null) return;
+    onFocus={props.onFocus || ((elm: ElementNode) => {
+      if (!elm || elm.selected === undefined) return;
       let child = elm.children[elm.selected];
       while (child?.skipFocus) {
         elm.selected++;
@@ -42,5 +41,5 @@ export function Row(props: Partial<IntrinsicNodeProps>) {
       child.setFocus();
     })}
     style={props.style || defaultStyle}
-    {...props}>{props.children}</node>
+    {...props}>{props.children}</View>
 }

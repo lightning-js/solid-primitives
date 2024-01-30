@@ -68,8 +68,8 @@ function debounceWithFlush<T>(
   return debounced;
 }
 
-function getElmName(elm: ElementNode) {
-  return elm.id || elm.name;
+function getElmName(elm: ElementNode): string {
+  return (elm.id as string) || elm.name;
 }
 
 function onFocusChangeCore(focusPath: ElementNode[] = []) {

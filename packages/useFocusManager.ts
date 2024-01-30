@@ -15,18 +15,24 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { createEffect, on, createSignal, untrack } from 'solid-js';
+import {
+  createEffect,
+  on,
+  createSignal,
+  untrack,
+  type Accessor,
+} from 'solid-js';
 import { useKeyDownEvent } from '@solid-primitives/keyboard';
 import { activeElement, ElementNode } from '@lightningjs/solid';
-import { isFunc } from './utils.js';
+import { isFunc, isArray } from './utils.js';
 
 export interface DefaultKeyMap {
-  Left: string;
-  Right: string;
-  Up: string;
-  Down: string;
-  Enter: string;
-  Last: string;
+  Left: string | string[];
+  Right: string | string[];
+  Up: string | string[];
+  Down: string | string[];
+  Enter: string | string[];
+  Last: string | string[];
 }
 
 export interface KeyMap extends DefaultKeyMap {}
@@ -53,12 +59,12 @@ declare module '@lightningjs/solid' {
    */
   interface IntrinsicCommonProps extends KeyMapEventHandlers {
     onFocus?: (
-      currentFocusedElm: ElementNode | null,
-      prevFocusedElm: ElementNode | null,
+      currentFocusedElm: ElementNode | undefined,
+      prevFocusedElm: ElementNode | undefined,
     ) => void;
     onBlur?: (
-      currentFocusedElm: ElementNode | null,
-      prevFocusedElm: ElementNode | null,
+      currentFocusedElm: ElementNode | undefined,
+      prevFocusedElm: ElementNode | undefined,
     ) => void;
     onKeyPress?: (
       this: ElementNode,
@@ -69,8 +75,8 @@ declare module '@lightningjs/solid' {
     onSelectedChanged?: (
       container: ElementNode,
       activeElm: ElementNode,
-      selectedIndex: number | null,
-      lastSelectedIndex: number | null,
+      selectedIndex: number | undefined,
+      lastSelectedIndex: number | undefined,
     ) => void;
     skipFocus?: boolean;
     wrap?: boolean;
@@ -92,57 +98,71 @@ declare module '@lightningjs/solid' {
   }
 }
 
-let keyMap: Partial<KeyMap> = {
-  Left: 'ArrowLeft',
-  Right: 'ArrowRight',
-  Up: 'ArrowUp',
-  Down: 'ArrowDown',
+const keyMapEntries: Record<string | number, string> = {
+  ArrowLeft: 'Left',
+  ArrowRight: 'Right',
+  ArrowUp: 'Up',
+  ArrowDown: 'Down',
   Enter: 'Enter',
-  Last: 'l',
-} satisfies DefaultKeyMap;
+  l: 'Last',
+  ' ': 'Space',
+  Backspace: 'Back',
+  Escape: 'Escape',
+  37: 'Left',
+  39: 'Right',
+  38: 'Up',
+  40: 'Down',
+  13: 'Enter',
+  32: 'Space',
+  8: 'Back',
+  27: 'Escape',
+};
 
 const [focusPath, setFocusPath] = createSignal<ElementNode[]>([]);
 export { focusPath };
-export const useFocusManager = (userKeyMap: Partial<KeyMap> = {}) => {
+export const useFocusManager = (userKeyMap?: Partial<KeyMap>) => {
   const keypressEvent = useKeyDownEvent();
-  keyMap = {
-    ...keyMap,
-    ...userKeyMap,
-  };
-  const keyMapEntries = Object.entries(keyMap);
+  if (userKeyMap) {
+    // Flatten the userKeyMap to a hash
+    for (const [key, value] of Object.entries(userKeyMap)) {
+      if (isArray(value)) {
+        value.forEach((v) => {
+          keyMapEntries[key] = v;
+        });
+      } else {
+        keyMapEntries[key] = value;
+      }
+    }
+  }
   createEffect(
     on(
-      activeElement,
+      activeElement as Accessor<ElementNode>,
       (
-        currentFocusedElm: ElementNode | null,
-        prevFocusedElm: ElementNode | null | undefined,
+        currentFocusedElm: ElementNode,
+        prevFocusedElm: ElementNode | undefined,
         prevFocusPath: ElementNode[] = [],
       ) => {
         const newFocusedElms = [];
-        let current: ElementNode | null = currentFocusedElm;
+        let current = currentFocusedElm;
 
         const fp: ElementNode[] = [];
         while (current) {
           if (!current.states.has('focus')) {
             current.states.add('focus');
             isFunc(current.onFocus) &&
-              current.onFocus.call(
-                current,
-                currentFocusedElm,
-                prevFocusedElm ?? null,
-              );
+              current.onFocus.call(current, currentFocusedElm, prevFocusedElm);
 
             newFocusedElms.push(current);
           }
           fp.push(current);
-          current = current.parent ?? null;
+          current = current.parent!;
         }
 
         prevFocusPath.forEach((elm) => {
           if (!fp.includes(elm)) {
             elm.states.remove('focus');
             isFunc(elm.onBlur) &&
-              elm.onBlur.call(elm, currentFocusedElm, prevFocusedElm ?? null);
+              elm.onBlur.call(elm, currentFocusedElm, prevFocusedElm);
           }
         });
 
@@ -158,14 +178,10 @@ export const useFocusManager = (userKeyMap: Partial<KeyMap> = {}) => {
 
     if (e) {
       // Search keyMap for the value of the pressed key
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const foundKeyEntry = keyMapEntries.find(([key, value]) => {
-        return value === e.key;
-      });
+      const mappedKeyEvent = keyMapEntries[e.key];
       untrack(() => {
         const fp = focusPath();
         for (const elm of fp) {
-          const mappedKeyEvent = foundKeyEntry ? foundKeyEntry[0] : undefined;
           if (mappedKeyEvent) {
             const onKeyHandler =
               elm[`on${mappedKeyEvent}` as keyof KeyMapEventHandlers];
