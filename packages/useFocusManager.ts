@@ -127,10 +127,10 @@ export const useFocusManager = (userKeyMap?: Partial<KeyMap>) => {
     for (const [key, value] of Object.entries(userKeyMap)) {
       if (isArray(value)) {
         value.forEach((v) => {
-          keyMapEntries[key] = v;
+          keyMapEntries[v] = key;
         });
       } else {
-        keyMapEntries[key] = value;
+        keyMapEntries[value] = key;
       }
     }
   }
