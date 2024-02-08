@@ -15,7 +15,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { ElementNode, setActiveElement } from '@lightningjs/solid';
+import { ElementNode } from '@lightningjs/solid';
 import { assertTruthy } from './utils.js';
 import type { KeyHandler } from './useFocusManager.js';
 
@@ -75,7 +75,7 @@ export function handleNavigation(
       active.selected =
         num < active.children.length ? num : active.children.length - 1;
     }
-    setActiveElement(active);
+    active.setFocus();
     return true;
   };
 }
