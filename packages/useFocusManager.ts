@@ -43,6 +43,7 @@ export type KeyHandler = (
   this: ElementNode,
   e: KeyboardEvent,
   target: ElementNode,
+  handlerElm: ElementNode,
 ) => KeyHandlerReturn;
 
 /**
@@ -70,6 +71,7 @@ declare module '@lightningjs/solid' {
       this: ElementNode,
       e: KeyboardEvent,
       mappedKeyEvent: string | undefined,
+      handlerElm: ElementNode,
       currentFocusedElm: ElementNode,
     ) => KeyHandlerReturn;
     onSelectedChanged?: (
@@ -181,12 +183,14 @@ export const useFocusManager = (userKeyMap?: Partial<KeyMap>) => {
       const mappedKeyEvent = keyMapEntries[e.key];
       untrack(() => {
         const fp = focusPath();
+        let finalFocusElm: ElementNode | undefined = undefined;
         for (const elm of fp) {
+          finalFocusElm = finalFocusElm || elm;
           if (mappedKeyEvent) {
             const onKeyHandler =
               elm[`on${mappedKeyEvent}` as keyof KeyMapEventHandlers];
             if (isFunc(onKeyHandler)) {
-              if (onKeyHandler.call(elm, e, elm) === true) {
+              if (onKeyHandler.call(elm, e, elm, finalFocusElm) === true) {
                 break;
               }
             }
@@ -195,7 +199,15 @@ export const useFocusManager = (userKeyMap?: Partial<KeyMap>) => {
           }
 
           if (isFunc(elm.onKeyPress)) {
-            if (elm.onKeyPress.call(elm, e, mappedKeyEvent, elm) === true) {
+            if (
+              elm.onKeyPress.call(
+                elm,
+                e,
+                mappedKeyEvent,
+                elm,
+                finalFocusElm,
+              ) === true
+            ) {
               break;
             }
           }
