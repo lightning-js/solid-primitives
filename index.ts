@@ -18,6 +18,5 @@
 export * from './packages/useFocusManager.js';
 export * from './packages/withPadding.js';
 export * from './packages/announcer/index.js';
-export * from './packages/Row.jsx';
-export * from './packages/Column.jsx';
+export * from './packages/createInfiniteItems.js';
 export * from './packages/createSpriteMap.js';
