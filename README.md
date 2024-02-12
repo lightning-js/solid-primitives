@@ -47,24 +47,6 @@ useFocusManager({
 
 When keys m, t, b are pressed - onMenu, onText, onButtons will be called respectively.
 
-### Row and Column
-
-Row and Column component handles key navigation between children by automatically calling setFocus on selected child.
-
-```jsx
-import { Column, Row } from '@lightningjs/solid-primitives';
-<Row y={400} style={styles.Row} gap={12} justifyContent="flexStart">
-  <Button autofocus>TV Shows</Button>
-  <Button>Movies</Button>
-  <Button>Sports</Button>
-  <Button>News</Button>
-</Row>;
-
-`onSelectedChanged(Row|Column, activeElm, selectedIndex, lastSelectedIndex)` is a callback you can tie into whenever Row or Column changes the selected element.
-
-You can also add `plinko` attribute to set the selected index equal to the previous rows selectedIndex so you can move straight up and down. Useful for when you have a column with nested rows.
-```
-
 ### withPadding
 
 `withPadding` is a [directive](https://www.solidjs.com/docs/latest/api#use___) to set padding when a child text node loads. It follows css by taking a single padding value or Array [top, bottom | left, right ] or [top | right, left | bottom ] or [top | right | bottom | left]
@@ -126,4 +108,31 @@ export default function Icon(props) {
     ></View>
   );
 }
+```
+
+### createInfiniteItems
+
+For Lightning apps it's really important to lazy load rows and items as much as possible.
+
+```jsx
+const [items, { setPage }] = createInfiniteItems(paginatedAPI);
+setPage(1); // load the first page - default no pages are loaded.
+
+const onSelectedChanged = (column, elm, index) => {
+  if (index < 5) {
+    return;
+  } else {
+    const page = Math.ceil((index - 4) / 10) + 1;
+    column.setPage(page);
+  }
+};
+
+<Column
+  ref={column}
+  {...props}
+  onFocus={onFocus}
+  onSelectedChanged={onSelectedChanged}
+>
+  <For each={props.items()}>{(item) => <Button>{item.title}</Button>}</For>
+</Column>;
 ```
