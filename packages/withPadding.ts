@@ -69,7 +69,7 @@ export function withPadding(el: ElementNode, padding: () => withPaddingInput) {
 
       let maxHeight = 0;
       el.children.forEach((c) => {
-        c.y = (c.y || 0) + top;
+        c.y = top;
         c.marginTop = top;
         maxHeight = Math.max(maxHeight, c.height || 0);
       });
