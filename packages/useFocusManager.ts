@@ -179,8 +179,8 @@ export const useFocusManager = (userKeyMap?: Partial<KeyMap>) => {
     const e = keypressEvent();
 
     if (e) {
-      // Search keyMap for the value of the pressed key
-      const mappedKeyEvent = keyMapEntries[e.key];
+      // Search keyMap for the value of the pressed key or keyCode if value undefined
+      const mappedKeyEvent = keyMapEntries[e.key] || keyMapEntries[e.keyCode];
       untrack(() => {
         const fp = focusPath();
         let finalFocusElm: ElementNode | undefined = undefined;
