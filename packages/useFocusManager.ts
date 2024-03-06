@@ -110,14 +110,6 @@ const keyMapEntries: Record<string | number, string> = {
   ' ': 'Space',
   Backspace: 'Back',
   Escape: 'Escape',
-  37: 'Left',
-  39: 'Right',
-  38: 'Up',
-  40: 'Down',
-  13: 'Enter',
-  32: 'Space',
-  8: 'Back',
-  27: 'Escape',
 };
 
 const [focusPath, setFocusPath] = createSignal<ElementNode[]>([]);
