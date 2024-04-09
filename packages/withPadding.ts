@@ -74,6 +74,8 @@ export function withPadding(el: ElementNode, padding: () => withPaddingInput) {
         maxHeight = Math.max(maxHeight, c.height || 0);
       });
       el.height = maxHeight + top + bottom;
+      // let flex know we need to re-layout
+      return true;
     }
   };
 }
