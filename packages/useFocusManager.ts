@@ -27,12 +27,12 @@ import { activeElement, ElementNode } from '@lightningjs/solid';
 import { isFunc, isArray } from './utils.js';
 
 export interface DefaultKeyMap {
-  Left: string | string[];
-  Right: string | string[];
-  Up: string | string[];
-  Down: string | string[];
-  Enter: string | string[];
-  Last: string | string[];
+  Left: string | number | (string | number)[];
+  Right: string | number | (string | number)[];
+  Up: string | number | (string | number)[];
+  Down: string | number | (string | number)[];
+  Enter: string | number | (string | number)[];
+  Last: string | number | (string | number)[];
 }
 
 export interface KeyMap extends DefaultKeyMap {}
@@ -187,7 +187,7 @@ export const useFocusManager = (userKeyMap?: Partial<KeyMap>) => {
               }
             }
           } else {
-            console.log(`Unhandled key event: ${e.key}`);
+            console.log(`Unhandled key event: ${e.key || e.keyCode}`);
           }
 
           if (isFunc(elm.onKeyPress)) {
