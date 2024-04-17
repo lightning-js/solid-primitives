@@ -5,9 +5,6 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
-  '@lightningjs/renderer':
-    specifier: '*'
-    version: 0.8.2
   '@lightningjs/solid':
     specifier: '*'
     version: 0.15.6(solid-js@1.8.16)
@@ -22,6 +19,9 @@ dependencies:
     version: 1.8.16
 
 devDependencies:
+  '@lightningjs/renderer':
+    specifier: ^0.8.2
+    version: 0.8.2
   '@typescript-eslint/eslint-plugin':
     specifier: ^7.6.0
     version: 7.6.0(@typescript-eslint/parser@7.6.0)(eslint@8.57.0)(typescript@5.4.4)
@@ -332,7 +332,6 @@ packages:
       '@lightningjs/threadx': 0.3.5
       '@protobufjs/eventemitter': 1.1.0
       memize: 2.1.0
-    dev: false
 
   /@lightningjs/solid@0.15.6(solid-js@1.8.16):
     resolution: {integrity: sha512-VLpkMjQJjMAIviE1AhboWhb/M/locT5Nuc5T/8lrYGqiaY9KQpl2Lp4EuYqs4tNH5ROVK60OnrUY6uPQTDw1XQ==}
@@ -340,13 +339,12 @@ packages:
       solid-js: '*'
     dependencies:
       '@lightningjs/renderer': 0.8.2
-      '@lightningjs/solid': file:(@lightningjs/renderer@0.8.2)(@lightningjs/solid-primitives@0.6.4)(solid-js@1.8.16)
+      '@lightningjs/solid': file:(@lightningjs/solid-primitives@0.6.5)(solid-js@1.8.16)
       solid-js: 1.8.16
     dev: false
 
   /@lightningjs/threadx@0.3.5:
     resolution: {integrity: sha512-aUIUfP/d3S0Vg/Ror7CLbqQR6qu5AAdGRnQ5RQuSQz4t9X2p8TomKD7ShRxI1/FnRR7om2MwKIe1Dix/Axdgpg==}
-    dev: false
 
   /@nodelib/fs.scandir@2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -371,7 +369,6 @@ packages:
 
   /@protobufjs/eventemitter@1.1.0:
     resolution: {integrity: sha512-j9ednRT81vYJ9OfVuXG6ERSTdEL1xVsNgqpkxMsbIabzSo3goCjDIveeGv5d03om39ML71RdmrGNjG5SReBP/Q==}
-    dev: false
 
   /@rollup/rollup-android-arm-eabi@4.14.1:
     resolution: {integrity: sha512-fH8/o8nSUek8ceQnT7K4EQbSiV7jgkHq81m9lWZFIXjJ7lJzpWXbQFpT/Zh6OZYnpFykvzC3fbEvEAFZu03dPA==}
@@ -1356,7 +1353,6 @@ packages:
 
   /memize@2.1.0:
     resolution: {integrity: sha512-yywVJy8ctVlN5lNPxsep5urnZ6TTclwPEyigM9M3Bi8vseJBOfqNrGWN/r8NzuIt3PovM323W04blJfGQfQSVg==}
-    dev: false
 
   /merge-stream@2.0.0:
     resolution: {integrity: sha512-abv/qOcuPfk3URPfDzmZU1LKmuw8kT+0nIHvKrKgFrwifol/doWcdA4ZqsWQ8ENrFKkd67Mfpo/LovbIUsbt3w==}
@@ -1867,17 +1863,15 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  file:(@lightningjs/renderer@0.8.2)(@lightningjs/solid-primitives@0.6.4)(solid-js@1.8.16):
+  file:(@lightningjs/solid-primitives@0.6.5)(solid-js@1.8.16):
     resolution: {directory: '', type: directory}
     id: 'file:'
     name: '@lightningjs/solid-primitives'
     peerDependencies:
-      '@lightningjs/renderer': '*'
       '@lightningjs/solid': '*'
       solid-js: '*'
     dependencies:
-      '@lightningjs/renderer': 0.8.2
-      '@lightningjs/solid': file:(@lightningjs/renderer@0.8.2)(@lightningjs/solid-primitives@0.6.4)(solid-js@1.8.16)
+      '@lightningjs/solid': file:(@lightningjs/solid-primitives@0.6.5)(solid-js@1.8.16)
       '@solid-primitives/keyboard': 1.2.8(solid-js@1.8.16)
       '@solid-primitives/scheduled': 1.4.3(solid-js@1.8.16)
       solid-js: 1.8.16
