@@ -15,7 +15,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { ElementNode } from '@lightningjs/solid';
+import type { ElementNode } from '@lightningjs/solid';
 
 type withPaddingInput =
   | number
